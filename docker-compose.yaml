@@ -1,0 +1,24 @@
+version: "3"
+services:
+  db:
+    image: postgres:12
+    ports:
+      - "5432:5432"
+    env_file:
+      - envs/db.local.env
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile.local
+    platform: linux/amd64
+    command: >
+      uvicorn config.asgi:application
+      --host 0.0.0.0 --reload
+    volumes:
+      - ./:/opt/app
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+    env_file:
+      - envs/app.local.env
